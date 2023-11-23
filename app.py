@@ -8,6 +8,7 @@ import numpy as np
 
 app = Flask(__name__)
 
+
 # Function to fetch historical weather data from OpenWeatherMap API
 def fetch_weather_data(api_key, lat, lon, start_timestamp):
     base_url = 'http://api.openweathermap.org/data/2.5/onecall/timemachine'
@@ -19,7 +20,14 @@ def fetch_weather_data(api_key, lat, lon, start_timestamp):
     }
     response = requests.get(base_url, params=params)
     data = response.json()
-    return data['hourly']
+
+    # Check if 'hourly' key is present in the response
+    if 'hourly' in data:
+        return data['hourly']
+    else:
+        # Handle the case where 'hourly' key is not present
+        raise KeyError('Hourly data not found in the response')
+
 
 # Replace 'your_openweathermap_api_key' with your actual API key
 api_key = '175426c427529e38551ea0bb8af7f2e5'
