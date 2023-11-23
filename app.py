@@ -8,7 +8,6 @@ import numpy as np
 
 app = Flask(__name__)
 
-
 # Function to fetch historical weather data from OpenWeatherMap API
 def fetch_weather_data(api_key, lat, lon, start_timestamp):
     base_url = 'http://api.openweathermap.org/data/2.5/onecall/timemachine'
@@ -21,13 +20,12 @@ def fetch_weather_data(api_key, lat, lon, start_timestamp):
     response = requests.get(base_url, params=params)
     data = response.json()
 
-    # Check if 'hourly' key is present in the response
-    if 'hourly' in data:
-        return data['hourly']
-    else:
-        # Handle the case where 'hourly' key is not present
-        raise KeyError('Hourly data not found in the response')
+    # Check if 'hourly' is present in the response
+    hourly_data = data.get('hourly')
+    if hourly_data is None:
+        raise ValueError('Hourly data not found in the response')
 
+    return hourly_data
 
 # Replace 'your_openweathermap_api_key' with your actual API key
 api_key = '175426c427529e38551ea0bb8af7f2e5'
@@ -36,14 +34,17 @@ lon = -74.0060  # Example longitude (New York)
 start_date = datetime.now() - timedelta(days=15)
 start_timestamp = int(start_date.timestamp())
 
-historical_data = fetch_weather_data(api_key, lat, lon, start_timestamp)
-df = pd.DataFrame(historical_data)
+try:
+    historical_data = fetch_weather_data(api_key, lat, lon, start_timestamp)
+    df = pd.DataFrame(historical_data)
 
-# Your linear regression model initialization
-model = LinearRegression()
-X = df.index.values.reshape(-1, 1)
-y = df['temp'].values  # Assuming temperature is the target variable
-model.fit(X, y)
+    # Your linear regression model initialization
+    model = LinearRegression()
+    X = df.index.values.reshape(-1, 1)
+    y = df['temp'].values  # Assuming temperature is the target variable
+    model.fit(X, y)
+except Exception as e:
+    print(f"Error during initialization: {e}")
 
 @app.route('/train', methods=['POST'])
 def train():
@@ -78,3 +79,4 @@ def api_predict():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
