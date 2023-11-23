@@ -1,12 +1,11 @@
 # tests/test_app.py
 import json
-import sys
-import os
+import pytest
+from Devops_Prac.app import app
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from app import app
-  # Adjust the import path
+@pytest.fixture
+def client():
+    return app.test_client()
 
 def test_train_endpoint(client):
     # Test the /train endpoint
