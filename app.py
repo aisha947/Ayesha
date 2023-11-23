@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import numpy as np
-
+import pytest  # Import pytest
 app = Flask(__name__)
 
 # Function to fetch historical weather data from OpenWeatherMap API
@@ -62,6 +62,9 @@ def train():
         return jsonify({'message': 'Model trained successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+@pytest.fixture
+def app():
+    return app
 
 @app.route('/api/predict', methods=['POST'])
 def api_predict():
@@ -76,6 +79,7 @@ def api_predict():
         return jsonify({'prediction': prediction[0]}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
