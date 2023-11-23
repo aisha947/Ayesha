@@ -1,6 +1,6 @@
 # tests/test_app.py
 import json
-from app import app
+from Devops_Prac.app import app  # Adjust the import path
 
 def test_train_endpoint(client):
     # Test the /train endpoint
@@ -26,3 +26,4 @@ def test_invalid_data_predict_endpoint(client):
     assert response.status_code == 500
     result = response.get_json()
     assert 'error' in result
+
